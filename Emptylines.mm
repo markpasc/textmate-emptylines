@@ -15,17 +15,19 @@
 
 - (void)saveUnspacedDocument:(id)fp8
 {
-	NSLog(@"OH HAI SAVER OF DOCUMENTSES");
-
-	unsigned int count;
-	Method* foo = class_copyMethodList(NSClassFromString(@"OakDocumentController"), &count);
-	NSLog(@"YAY GOT %d METHODS", count);
-	for (; count; count--) {
-		NSLog(@"YAY METHOD %s", sel_getName(method_getName(foo[count - 1])));
-	}
-
 	// Call the swizzled original method.
-	[self saveUnspacedDocument];
+	[self saveUnspacedDocument:fp8];
+
+	// sed us some fileage.
+	NSString* fn = [textDocument filename];
+	NSTask* jerb = [NSTask launchedTaskWithLaunchPath:@"/usr/bin/sed" arguments:
+				   [NSArray arrayWithObjects:@"-i",@"",@"-e",@"s/[ \\t]*$//g",fn,nil]];
+	[jerb waitUntilExit];  // meh
+
+	NSLog(@"YAY SED ENDED VIA %d", [jerb terminationStatus]);
+	if ([jerb terminationStatus] == 0) {
+		NSLog(@"YAY I SHOULD RELOAD NOW");
+	}
 }
 
 @end
@@ -45,7 +47,7 @@
 
 - (void)installSaver
 {
-	MethodSwizzle(NSClassFromString("OakDocumentController"),
+	MethodSwizzle(NSClassFromString(@"OakDocumentController"),
 				  @selector(saveDocument:),
 				  @selector(saveUnspacedDocument:));
 }

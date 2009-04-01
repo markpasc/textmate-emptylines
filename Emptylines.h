@@ -12,16 +12,27 @@
 - (float)version;
 @end
 
+@interface OakDocument : NSObject
+{
+	NSString* filename;
+}
+@end
+
+@interface OakDocumentController : NSWindowController
+{
+	NSObject *textView;
+	id statusBar;
+	OakDocument *textDocument;
+}
+@end
+
 @interface OakDocumentController (Unspacer)
 - (void) saveUnspacedDocument:(id)fp8;
 @end
 
 @interface Emptylines : NSObject
 {
-	NSMenu* fileMenu;
-	NSMenuItem* oldSaver;
 }
 - (id)initWithPlugInController:(id <TMPlugInController>)aController;
 - (void)installSaver;
-- (void)saveDocument:(id)fp8;
 @end
