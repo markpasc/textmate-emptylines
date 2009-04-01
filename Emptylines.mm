@@ -20,13 +20,16 @@
 
 	// sed us some fileage.
 	NSString* fn = [textDocument filename];
+	if (!fn) return;
+
 	NSTask* jerb = [NSTask launchedTaskWithLaunchPath:@"/usr/bin/sed" arguments:
-				   [NSArray arrayWithObjects:@"-i",@"",@"-e",@"s/[ \\t]*$//g",fn,nil]];
+				   [NSArray arrayWithObjects:@"-i",@"",@"-e",@"s/[ \t]*$//g",fn,nil]];
 	[jerb waitUntilExit];  // meh
 
-	NSLog(@"YAY SED ENDED VIA %d", [jerb terminationStatus]);
 	if ([jerb terminationStatus] == 0) {
-		NSLog(@"YAY I SHOULD RELOAD NOW");
+		// Make me reload.
+		[textDocument setFileModificationDate:[NSDate distantPast]];
+		[textDocument checkForFilesystemChanges];
 	}
 }
 

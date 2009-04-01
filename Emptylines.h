@@ -16,6 +16,10 @@
 {
 	NSString* filename;
 }
+
+-(NSString*) filename;
+-(BOOL) checkForFilesystemChanges;
+-(BOOL) setFileModificationDate:(id)fp1;
 @end
 
 @interface OakDocumentController : NSWindowController
