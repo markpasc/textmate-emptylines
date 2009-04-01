@@ -12,6 +12,10 @@
 - (float)version;
 @end
 
+@interface OakDocumentController (Unspacer)
+- (void) saveUnspacedDocument:(id)fp8;
+@end
+
 @interface Emptylines : NSObject
 {
 	NSMenu* fileMenu;

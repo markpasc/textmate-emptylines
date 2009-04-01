@@ -11,6 +11,25 @@
 #import "Emptylines.h"
 #import "MethodSwizzle.h"
 
+@implementation OakDocumentController (Unspacer)
+
+- (void)saveUnspacedDocument:(id)fp8
+{
+	NSLog(@"OH HAI SAVER OF DOCUMENTSES");
+
+	unsigned int count;
+	Method* foo = class_copyMethodList(NSClassFromString(@"OakDocumentController"), &count);
+	NSLog(@"YAY GOT %d METHODS", count);
+	for (; count; count--) {
+		NSLog(@"YAY METHOD %s", sel_getName(method_getName(foo[count - 1])));
+	}
+
+	// Call the swizzled original method.
+	[self saveUnspacedDocument];
+}
+
+@end
+
 @implementation Emptylines
 
 - (id)initWithPlugInController:(id <TMPlugInController>)aController
@@ -26,32 +45,9 @@
 
 - (void)installSaver
 {
-	fileMenu = [[[NSApp mainMenu] itemWithTitle:@"File"] submenu];
-	if (!fileMenu)
-		return;
-	[fileMenu retain];
-
-	int oldSaverIndex = [fileMenu indexOfItemWithTitle:@"Save"];
-	oldSaver = [[fileMenu itemAtIndex:oldSaverIndex] retain];
-	[fileMenu removeItemAtIndex:oldSaverIndex];
-
-	NSMenuItem* newSaver = [[NSMenuItem alloc] initWithTitle:@"Save Without Spaces"	action:@selector(saveDocument:) keyEquivalent:@"s"];
-	[newSaver setTarget:self];
-	[newSaver setKeyEquivalentModifierMask:NSCommandKeyMask];
-
-	[fileMenu insertItem:newSaver atIndex:oldSaverIndex];
-}
-
-- (void)saveDocument:(id)fp8
-{
-	NSLog(@"OH HAI SAVER OF DOCUMENTSES");
-
-	unsigned int count;
-	Method* foo = class_copyMethodList(NSClassFromString(@"OakDocumentController"), &count);
-	NSLog(@"YAY GOT %d METHODS", count);
-	for (; count; count--) {
-		NSLog(@"YAY METHOD %s", sel_getName(method_getName(foo[count - 1])));
-	}
+	MethodSwizzle(NSClassFromString("OakDocumentController"),
+				  @selector(saveDocument:),
+				  @selector(saveUnspacedDocument:));
 }
 
 @end
